@@ -4,7 +4,10 @@ import android.text.TextUtils
 import com.example.hadoop.coolweather.db.City
 import com.example.hadoop.coolweather.db.County
 import com.example.hadoop.coolweather.db.Province
+import com.example.hadoop.coolweather.gson.Weather
+import com.google.gson.Gson
 import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * Created by 张仲光 on 2018/3/16.
@@ -47,5 +50,12 @@ object Utility {
             return  true
         }
         return  false
+    }
+
+    fun handleWeatheresponse(response:String?):Weather{
+        val jsonObject = JSONObject(response)
+        val jsonArray = jsonObject.getJSONArray("HeWeather")
+        val weatherContent = jsonArray.getJSONObject(0).toString()
+        return Gson().fromJson(weatherContent,Weather::class.java)
     }
 }
