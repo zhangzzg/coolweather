@@ -1,14 +1,17 @@
 package com.example.hadoop.coolweather
 
+import android.graphics.Color
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.view.GravityCompat
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import com.example.hadoop.coolweather.R.id.degee_text
+import com.bumptech.glide.Glide
 import com.example.hadoop.coolweather.gson.Weather
 import com.example.hadoop.coolweather.util.HttpUtil
 import com.example.hadoop.coolweather.util.Utility
@@ -26,15 +29,42 @@ class WeatherActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //状态栏设置透明在Android5.0才出现（也就是AndroidSDK大于或时等于21）
+        if(Build.VERSION.SDK_INT > 21){
+            val decorView = window.decorView
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            window.statusBarColor = Color.TRANSPARENT
+        }
         setContentView(R.layout.activity_weather)
+        swipe_refresh.setColorSchemeColors(R.color.colorPrimary)
+        var weatherId = ""
+
         val pref = PreferenceManager.getDefaultSharedPreferences(this)
         val weatherString = pref.getString("weather",null)
+        val bingPic = pref.getString("bing_pic",null)
+        if(!TextUtils.isEmpty(bingPic)){
+            Glide.with(this).load(bingPic).into(bing_pic_img)
+        }else{
+            loadBingPic()
+        }
         if(!TextUtils.isEmpty(weatherString)){
             val weather = Utility.handleWeatheresponse(weatherString)
+            weatherId = weather?.basic?.id!!
+            showWetherInfo(weather)
         }else{
-            val weatherId = intent.getStringExtra("weather_id")
+            weatherId = intent.getStringExtra("weather_id")
             weather_layout.visibility = View.INVISIBLE
+            requestWeather(weatherId)
         }
+
+        swipe_refresh.setOnRefreshListener {
+            requestWeather(weatherId)
+        }
+
+        nav_button.setOnClickListener{
+            drawer_layout.openDrawer(GravityCompat.START)
+        }
+
     }
 
     fun requestWeather(weatherId:String?){
@@ -55,19 +85,43 @@ class WeatherActivity : AppCompatActivity() {
                        edtor.putString("weather",responseText)
                        edtor.apply()
                        showWetherInfo(weather)
+                       swipe_refresh.isRefreshing = false
                    }else{
-                       Toast.makeText(this@WeatherActivity,"獲取天氣信息失敗",Toast.LENGTH_SHORT).show()
+                       runOnUiThread {
+                           Toast.makeText(this@WeatherActivity,"獲取天氣信息失敗",Toast.LENGTH_SHORT).show()
+                           swipe_refresh.isRefreshing = false
+                       }
                    }
                 }
             }
 
         })
+        loadBingPic()
+    }
 
+    fun loadBingPic(){
+        val requestBingPic = "http://guolin.tech/api/bing_pic"
+        HttpUtil.sentOkHttpRequest(requestBingPic,object :okhttp3.Callback{
+            override fun onFailure(call: Call?, e: IOException?) {
+                Toast.makeText(this@WeatherActivity,"获取背景图片失败",Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call?, response: Response?) {
+             val bingPic  = response?.body()?.string()
+             val edit = PreferenceManager.getDefaultSharedPreferences(this@WeatherActivity).edit()
+                  edit.putString("bing_pic",bingPic)
+                  edit.apply()
+                  runOnUiThread {
+                      Glide.with(this@WeatherActivity).load(bingPic).into(bing_pic_img)
+                  }
+            }
+
+        })
     }
 
     fun showWetherInfo(weather:Weather?){
-       val cityName = weather?.basic?.city
-       val upDateTime = weather?.basic?.update?.loc?.split(" ")?.get(1)
+        val cityName = weather?.basic?.city
+        val upDateTime = weather?.basic?.update?.loc?.split(" ")?.get(1)
         val degree = weather?.now?.temp +"℃"
         val weatherInfo = weather?.now?.cond?.txt
         title_city.text = cityName

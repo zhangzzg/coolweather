@@ -1,6 +1,7 @@
 package com.example.hadoop.coolweather
 
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import com.example.hadoop.coolweather.db.County
 import com.example.hadoop.coolweather.db.Province
 import com.example.hadoop.coolweather.util.HttpUtil
 import com.example.hadoop.coolweather.util.Utility
+import kotlinx.android.synthetic.main.activity_weather.*
 import okhttp3.Call
 import okhttp3.Response
 import org.litepal.crud.DataSupport
@@ -44,9 +46,9 @@ class ChooseAreaFragment: Fragment() {
     }
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View?{
         val view = inflater?.inflate(R.layout.choose_area,container,false)
-        listview = view?.findViewById<ListView>(R.id.listview)
-        back = view?.findViewById<Button>(R.id.back)
-        title = view?.findViewById<TextView>(R.id.title)
+        listview = view?.findViewById<ListView>(R.id.list_view)
+        back = view?.findViewById<Button>(R.id.back_button)
+        title = view?.findViewById<TextView>(R.id.title_text)
         adater = ArrayAdapter<String>(activity,android.R.layout.simple_list_item_1,dataList)
         listview?.adapter = adater
         return view
@@ -63,6 +65,20 @@ class ChooseAreaFragment: Fragment() {
              LEVEL_CITY ->{
                  selectedCity = cityList?.get(position)
                  queryCounty()
+             }
+             LEVEL_COUNTY ->{
+                 val weatherId = countyList?.get(position)?.weatherId
+                 if(activity is MainActivity){
+                     val intent = Intent(activity,WeatherActivity::class.java)
+                     intent.putExtra("weather_id",weatherId)
+                     activity.startActivity(intent)
+                     activity.finish()
+                 }else if(activity is WeatherActivity){
+                     val mActivity = activity as WeatherActivity
+                     mActivity.drawer_layout.closeDrawers()
+                     mActivity.swipe_refresh.isRefreshing = true
+                     mActivity.requestWeather(weatherId)
+                 }
              }
          }
         }

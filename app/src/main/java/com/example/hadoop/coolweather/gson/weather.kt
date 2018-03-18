@@ -27,5 +27,5 @@ data class Forecast(var date:String?,var temp:Temperature?,var cond:More?){
     data class More(var txt_d:String?)
 }
 
-data class Weather(var status:String?,var basic: Basic?,var aqi: AQI?,var now: Now,var suggestion:Suggestion,var daily_forecast:List<Forecast>){
-}
+data class Weather(var status:String?,var basic: Basic?,var aqi: AQI?,var now: Now,
+                   var suggestion:Suggestion,var daily_forecast:List<Forecast>){}

@@ -54,7 +54,7 @@ object Utility {
 
     fun handleWeatheresponse(response:String?):Weather{
         val jsonObject = JSONObject(response)
-        val jsonArray = jsonObject.getJSONArray("HeWeather")
+        val jsonArray = jsonObject.getJSONArray("HeWeather data service 3.0")
         val weatherContent = jsonArray.getJSONObject(0).toString()
         return Gson().fromJson(weatherContent,Weather::class.java)
     }
