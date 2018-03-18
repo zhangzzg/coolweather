@@ -12,21 +12,22 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    /*signingConfigs{
-        configure{
-            storeFile file('C:/sign/zzg.jks')
-            storePassWord '4372020'
-            keyAlias 'zzg'
-            keyPassWord '4372020'
+    //多渠道打包
+    productFlavors{
+         qihoo{
+             applicationId "com.example.hadoop.coolweather.qihoo"
+         }
+         baidu{
+            applicationId "com.example.hadoop.coolweather.baidu"
+         }
+    }
 
-        }
-    }*/
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.configure
         }
+
     }
 }
 

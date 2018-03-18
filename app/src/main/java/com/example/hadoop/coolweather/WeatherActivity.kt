@@ -90,7 +90,7 @@ class WeatherActivity : AppCompatActivity() {
                        swipe_refresh.isRefreshing = false
                    }else{
                        runOnUiThread {
-                           Toast.makeText(this@WeatherActivity,"獲取天氣信息失敗",Toast.LENGTH_SHORT).show()
+                           Toast.makeText(this@WeatherActivity,"获取天气信息失败:"+weather.status,Toast.LENGTH_SHORT).show()
                            swipe_refresh.isRefreshing = false
                        }
                    }
