@@ -1,5 +1,6 @@
 package com.example.hadoop.coolweather
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -13,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.hadoop.coolweather.gson.Weather
+import com.example.hadoop.coolweather.service.AutoUpDateService
 import com.example.hadoop.coolweather.util.HttpUtil
 import com.example.hadoop.coolweather.util.Utility
 import kotlinx.android.synthetic.main.activity_weather.*
@@ -152,5 +154,7 @@ class WeatherActivity : AppCompatActivity() {
         car_wash_text .text = carWath
         sport_text.text = sport
         weather_layout.visibility = View.VISIBLE
+        val intent = Intent(this, AutoUpDateService::class.java)
+        startService(intent)
     }
 }
