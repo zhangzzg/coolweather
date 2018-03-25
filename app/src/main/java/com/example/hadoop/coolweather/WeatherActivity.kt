@@ -74,7 +74,7 @@ class WeatherActivity : AppCompatActivity() {
         HttpUtil.sentOkHttpRequest(weatherUrl,object :okhttp3.Callback{
             override fun onFailure(call: Call?, e: IOException?) {
                 runOnUiThread {
-                    Toast.makeText(this@WeatherActivity,"獲取天氣信息失敗",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@WeatherActivity,"获取天气信息失败",Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -105,7 +105,9 @@ class WeatherActivity : AppCompatActivity() {
         val requestBingPic = "http://guolin.tech/api/bing_pic"
         HttpUtil.sentOkHttpRequest(requestBingPic,object :okhttp3.Callback{
             override fun onFailure(call: Call?, e: IOException?) {
-                Toast.makeText(this@WeatherActivity,"获取背景图片失败",Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    Toast.makeText(this@WeatherActivity,"获取背景图片失败",Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun onResponse(call: Call?, response: Response?) {
@@ -147,9 +149,9 @@ class WeatherActivity : AppCompatActivity() {
             aqi_text.text = weather?.aqi?.city?.aqi
             pm25_text.text = weather?.aqi?.city?.pm25
         }
-        val comfort = "舒適度"+weather?.suggestion?.comf?.txt
-        val carWath = "洗車制度"+weather?.suggestion?.cw?.txt
-        val sport = "運動建議"+ weather?.suggestion?.sport?.txt
+        val comfort = "舒适度"+weather?.suggestion?.comf?.txt
+        val carWath = "洗车制度"+weather?.suggestion?.cw?.txt
+        val sport = "运动建议"+ weather?.suggestion?.sport?.txt
         comfort_text.text = comfort
         car_wash_text .text = carWath
         sport_text.text = sport
